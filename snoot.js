@@ -1,3 +1,4 @@
+
 /*
     Filename: snoot.js
     Form Validation code for snoot.html
@@ -13,6 +14,7 @@
 var twentynine = document.createDocumentFragment();
 var thirty = document.createDocumentFragment();
 var thirtyone = document.createDocumentFragment();
+var formValidity = true;
 
 // Function to remove select list defaults
 function removeSelectDefaults() {
@@ -61,6 +63,80 @@ function updateDays() {
     }
 }
 
+// Function to inspect custom checkbox on message chain
+function autoCheckCustom() {
+    var messageBox = document.getElementById("customText");
+    // textarea has message, check the box
+    if (messageBox.value !== "" && messageBox.value !== messageBox.placeholder) {
+        document.getElementById("custom").checked = "checked";
+    }
+    // text area has no message, uncheck the box
+    else {
+        document.getElementById("custom").checked = "";
+    }
+}
+
+// Function to copy billing to delivery address
+function copyBillingAddress() {
+    var billingInputElements = document.querySelectorAll("#billingAddress input");
+    var deliveryInputElements = document.querySelectorAll("#deliveryAddress input");
+    // Duplicate addresses - Checkbox is checked - Copy
+    if (document.getElementById("sameAddr").checked) {
+        for (var i = 0; i < billingInputElements.length; i++) {
+            deliveryInputElements[i + 1].value = billingInputElements[i].value;
+        }
+        document.querySelector("#deliveryAddress select").value = document.querySelector("#billingAddress select").value;
+    }
+    // Duplicate addresses - Checkbox is not checked - Erase
+    else {
+        for (var i = 0; i < billingInputElements.length; i++) {
+            deliveryInputElements[i + 1].value = "";
+        }
+        document.querySelector("#deliveryAddress select").selectedIndex = -1;
+    }
+}
+
+// Function to validate address - billing & delivery
+function validateAddress(fieldsetId) {
+    var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
+    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage"[0]);
+    var fieldsetValidity = true;
+    var elementCount = inputElements.length;
+    var currentElement;
+    try {
+        alert("I am executing")
+    } catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        formValidity = false;
+    }
+}
+
+// Function to validate entire form validity
+function validateForm(evt) {
+    if (evt.preventDefault) {
+        evt.preventDefault();
+    } 
+    else {
+        evt.returnValue = false;
+    }
+    formValidity = true;
+
+    validateAddress("billingAddress");
+    validateAddress("deliveryAddress");
+
+    if (formValidity === true) { // Form is valid
+        document.getElementById("errorText").innerHTML = "";
+        document.getElementById("errorText").style.display = "none";
+        document.getElementsByTagName("form")[0].submit();
+    }
+    else {
+        document.getElementById("errorText").innerHTML = "Please Fix the Indicated Problems and then Resubmit Your Order";
+        document.getElementById("errorText").style.display = "block";
+        scroll(0,0);
+    }
+}
+
 // Function that sets up page on load event
 function setUpPage() {
     removeSelectDefaults();
@@ -81,6 +157,24 @@ function createEventListeners() {
         deliveryYear.addEventListener("change", updateDays, false);
     } else if (deliveryYear.attachEvent) {
         deliveryYear.attachEvent("onchange", updateDays);
+    }
+    var messageBox = document.getElementById("customText");
+    if (messageBox.addEventListener) {
+        messageBox.addEventListener("change", autoCheckCustom, false);
+    } else if (messageBox.attachEvent) {
+        messageBox.attachEvent("onchange", autoCheckCustom);
+    }
+    var same = document.getElementById("sameAddr");
+    if (same.addEventListener) {
+        same.addEventListener("change", copyBillingAddress, false);
+    } else if (same.attachEvent) {
+        same.attachEvent("onchange", copyBillingAddress);
+    }
+    var form = document.getElementsByTagName("form")[0];
+    if (form.addEventListener) {
+        form.addEventListener("submit", validateForm, false);
+    } else if (form.attachEvent) {
+        form.attachEvent("onsubmit", validateForm);
     }
 }
 
