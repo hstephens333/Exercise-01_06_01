@@ -47,18 +47,18 @@ function updateDays() {
     }
     if (deliveryYear.selectedIndex === -1) {
         deliveryDay.selectedIndex = 0;
-    } 
+    }
     // if Feb and 2020 twentynine
     if (selectedMonth === "2" && deliveryYear.options[deliveryYear.selectedIndex].value === "2020"); {
         deliveryDay.appendChild(twentynine.cloneNode(true));
-    } 
+    }
     // else if 30 day month thirty 
     if (selectedMonth === "4" || selectedMonth === "6" || selectedMonth === "9" || selectedMonth === "11") {
         deliveryDay.appendChild(thirty.cloneNode(true));
-    } 
+    }
     // else if 31 day month thirtyone
-    else if (selectedMonth === "1" || selectedMonth === "3" || selectedMonth === "5" || selectedMonth === "7" 
-    || selectedMonth === "8" || selectedMonth === "10" || selectedMonth === "12") {
+    else if (selectedMonth === "1" || selectedMonth === "3" || selectedMonth === "5" || selectedMonth === "7"
+        || selectedMonth === "8" || selectedMonth === "10" || selectedMonth === "12") {
         deliveryDay.appendChild(thirtyone.cloneNode(true));
     }
 }
@@ -99,13 +99,50 @@ function copyBillingAddress() {
 // Function to validate address - billing & delivery
 function validateAddress(fieldsetId) {
     var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
-    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage"[0]);
+    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage")[0];
     var fieldsetValidity = true;
     var elementCount = inputElements.length;
     var currentElement;
     try {
-        alert("I am executing")
-    } catch (msg) {
+        // Loop through input fields looking for blanks
+        for (var i = 0; i < elementCount; i++) {
+            currentElement = inputElements[i];
+            // Blanks
+            if (currentElement.value === "") {
+                debugger;
+                currentElement.style.background = "rgb(255, 233, 233)";
+                fieldsetValidity = false;
+            }
+            // Not Blanks
+            else {
+                currentElement.style.background = "white";
+            }
+        }
+        // Validate select list field
+        currentElement = document.querySelectorAll("#" + fieldsetId + " select")[0];
+        if (currentElement.selectedIndex === -1) {
+            currentElement.style.border = "1px solid red";
+            fieldsetValidity = false;
+        }
+        else {
+            currentElement.style.border = "";
+        }
+        
+        // Action for invalid fieldset
+        if (fieldsetValidity === false) {
+            if (fieldsetId === "billingAddress") {
+                throw "Please complete all Billing Address information"
+            }
+            else {
+                throw "Please complete all Delivery Address information"
+            }
+        }
+        else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+        }
+    }
+    catch (msg) {
         errorDiv.style.display = "block";
         errorDiv.innerHTML = msg;
         formValidity = false;
@@ -116,7 +153,7 @@ function validateAddress(fieldsetId) {
 function validateForm(evt) {
     if (evt.preventDefault) {
         evt.preventDefault();
-    } 
+    }
     else {
         evt.returnValue = false;
     }
@@ -133,7 +170,7 @@ function validateForm(evt) {
     else {
         document.getElementById("errorText").innerHTML = "Please Fix the Indicated Problems and then Resubmit Your Order";
         document.getElementById("errorText").style.display = "block";
-        scroll(0,0);
+        scroll(0, 0);
     }
 }
 
