@@ -107,7 +107,6 @@ function validateDeliveryDate() {
     var fieldsetValidity = true;
     var elementCount = selectElements.length;
     var currentElement;
-    // This is where we were yesterday
     try {
         // Loop through input fields looking for blanks
         for (var i = 0; i < elementCount; i++) {
@@ -206,6 +205,30 @@ function validatePayment() {
     }
 }
 
+// Function to validate custom messages
+function validateMessage() {
+    var msgBox = document.getElementById("customText");
+    var errorDiv = document.querySelectorAll("#message" + " .errorMessage")[0];
+    var fieldsetValidity = true;
+    try {
+        // Validate checkbox and textarea
+        if (document.getElementById("custom").checked && (msgBox.value === "" || msgBox.value === msgBox.placeholder)) {
+            throw "Please enter your custom message text";
+        }
+        else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+            msgBox.style.background = "white";
+        }
+    }
+    catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        msgBox.style.background = "rgb(255, 233, 233)";
+        formValidity = false;
+    }
+}
+
 // Function to validate address - billing & delivery
 function validateAddress(fieldsetId) {
     var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
@@ -258,6 +281,8 @@ function validateAddress(fieldsetId) {
     }
 }
 
+
+
 // Function to validate entire form validity
 function validateForm(evt) {
     if (evt.preventDefault) {
@@ -272,6 +297,7 @@ function validateForm(evt) {
     validateAddress("deliveryAddress");
     validateDeliveryDate();
     validatePayment();
+    validateMessage();
 
     if (formValidity === true) { // Form is valid
         document.getElementById("errorText").innerHTML = "";
